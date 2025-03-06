@@ -4,7 +4,7 @@ using System.Collections;
 public class SMenu : MonoBehaviour
 {
     public AudioSource audioSource;  // Référence à l'AudioSource
-    public string sceneToLoad = "_ChoixJoueur_";  // Nom de la scène à charger
+    public string sceneToLoad = "_ChoixPersonnage_";  // Nom de la scène à charger
 
     public void PlayGame()
     {

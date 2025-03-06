@@ -9,7 +9,7 @@ public class Smenu_joueur : MonoBehaviour
     public UnityEngine.UI.Button acceptButton;
     public UnityEngine.UI.Button backButton;
     public AudioSource audioSource;
-    public string sceneToLoad = "_scene_";
+    public string sceneToLoad = "_ChoixPersonnage_";
     public string menuScene = "_menu_";
 
     private int nombreJoueurs = 1;
