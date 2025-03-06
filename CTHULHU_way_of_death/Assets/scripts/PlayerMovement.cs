@@ -3,6 +3,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public GameObject player; // Modèle de joueur à instancier
+    public Sprite[] characterSprites; // Tableau des sprites des personnages
+
     private int nombreJoueurs; // Nombre de joueurs en jeu récupéré
 
     // Liste des positions prédéfinies où les joueurs apparaîtront
@@ -38,6 +40,19 @@ public class PlayerMovement : MonoBehaviour
             // Utilisation des positions prédéfinies pour chaque joueur
             playerliste[i] = Create(playerName, spawnPositions[i]);
             SetPosition(playerliste[i], spawnPositions[i]);
+
+            // Récupérer l'indice du personnage sélectionné pour ce joueur
+            int selectedCharacterIndex = PlayerPrefs.GetInt("Player" + (i + 1) + "Character", 0);
+
+            // Assigner le sprite correspondant au personnage sélectionné
+            if (selectedCharacterIndex >= 0 && selectedCharacterIndex < characterSprites.Length)
+            {
+                SpriteRenderer spriteRenderer = playerliste[i].GetComponentInChildren<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.sprite = characterSprites[selectedCharacterIndex];
+                }
+            }
         }
     }
 

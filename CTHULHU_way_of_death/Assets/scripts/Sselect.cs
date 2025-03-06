@@ -1,88 +1,123 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
-public class CardSelector : MonoBehaviour
+public class ImageGallery : MonoBehaviour
 {
-    public Image cardImage; // L'image qui affiche la carte actuelle
-    public Sprite[] cardSprites; // Sprites des 10 cartes (recto uniquement)
+    public Sprite[] frontImages; // Tableau des images avant des cartes
+    public Sprite[] backImages;  // Tableau des images arri√®re des cartes
+    public Image displayImage;   // R√©f√©rence √† l'UI Image pour afficher la carte
+    public Button leftButton;    // Bouton pour aller √† l'image pr√©c√©dente
+    public Button rightButton;   // Bouton pour aller √† l'image suivante
+    public Button flipButton;    // Bouton pour retourner la carte
+    public Button returnButton;  // Bouton pour retourner au menu pr√©c√©dent
+    public Button selectButton;  // Bouton pour s√©lectionner le personnage
+    public TMP_Text playerText;  // Texte pour indiquer le joueur actuel
 
-    private int currentCardIndex = 0; // Indice de la carte actuelle
-
-    // Boutons
-    public Button nextButton;
-    public Button previousButton;
-    public Button validateButton;
-    public Button backButton;
+    private int currentIndex = 0; // Index de l'image actuelle
+    private bool isShowingFront = true; // Indique si l'avant de la carte est visible
+    private int currentPlayer = 1; // Num√©ro du joueur actuel
+    private bool[] selectedCharacters; // Tableau pour suivre les personnages d√©j√† s√©lectionn√©s
 
     void Start()
     {
-        // Initialisation des ÈvÈnements pour les boutons
-        nextButton.onClick.AddListener(NextCard);
-        previousButton.onClick.AddListener(PreviousCard);
-        validateButton.onClick.AddListener(ValidateSelection);
-        backButton.onClick.AddListener(GoBackToPreviousScene);
+        // Initialiser le tableau des personnages s√©lectionn√©s
+        selectedCharacters = new bool[frontImages.Length];
 
-        // Afficher la premiËre carte
-        UpdateCard();
+        // Mettre √† jour l'image et le texte
+        UpdateImage();
+        UpdatePlayerText();
+
+        // Ajouter les listeners aux boutons
+        leftButton.onClick.AddListener(ShowPreviousImage);
+        rightButton.onClick.AddListener(ShowNextImage);
+        flipButton.onClick.AddListener(FlipImage);
+        returnButton.onClick.AddListener(ReturnToLastMenu);
+        selectButton.onClick.AddListener(SelectCharacter);
     }
 
-    // Fonction pour passer ‡ la carte suivante
-    public void NextCard()
+    void ShowPreviousImage()
     {
-        // Si l'on est sur la derniËre carte, on ne passe pas ‡ la suivante
-        if (currentCardIndex < cardSprites.Length - 1)
+        currentIndex--;
+        if (currentIndex < 0)
         {
-            currentCardIndex++; // Passe ‡ la carte suivante
-            UpdateCard();
+            currentIndex = frontImages.Length - 1; // Boucler √† la derni√®re image
+        }
+        UpdateImage();
+    }
+
+    void ShowNextImage()
+    {
+        currentIndex++;
+        if (currentIndex >= frontImages.Length)
+        {
+            currentIndex = 0; // Boucler √† la premi√®re image
+        }
+        UpdateImage();
+    }
+
+    void FlipImage()
+    {
+        isShowingFront = !isShowingFront; // Basculer entre l'avant et l'arri√®re
+        UpdateImage();
+    }
+
+    void ReturnToLastMenu()
+    {
+        // Retourner au menu pr√©c√©dent
+        SceneManager.LoadScene("MainMenu"); // Remplacez "MainMenu" par le nom de votre sc√®ne de menu
+    }
+
+    void SelectCharacter()
+    {
+        // V√©rifier si le personnage est d√©j√† s√©lectionn√©
+        if (selectedCharacters[currentIndex])
+        {
+            Debug.Log("Ce personnage est d√©j√† s√©lectionn√© !");
+            return;
+        }
+
+        // Sauvegarder le personnage s√©lectionn√© pour le joueur actuel
+        PlayerPrefs.SetInt("Player" + currentPlayer + "Character", currentIndex);
+        selectedCharacters[currentIndex] = true; // Marquer le personnage comme s√©lectionn√©
+
+        // Passer au joueur suivant
+        currentPlayer++;
+
+        // Si tous les joueurs ont choisi, charger la sc√®ne de jeu
+        if (currentPlayer > PlayerPrefs.GetInt("NombreJoueurs", 1))
+        {
+            SceneManager.LoadScene("_scene_"); // Remplacez "GameScene" par le nom de votre sc√®ne de jeu
         }
         else
         {
-            Debug.Log("Vous Ítes dÈj‡ ‡ la derniËre carte.");
+            // R√©initialiser pour le prochain joueur
+            currentIndex = 0;
+            isShowingFront = true;
+            UpdateImage();
+            UpdatePlayerText();
         }
     }
 
-    // Fonction pour revenir ‡ la carte prÈcÈdente
-    public void PreviousCard()
+    void UpdateImage()
     {
-        // Si l'on est sur la premiËre carte, on ne revient pas en arriËre
-        if (currentCardIndex > 0)
+        if (isShowingFront)
         {
-            currentCardIndex--; // Reviens ‡ la carte prÈcÈdente
-            UpdateCard();
+            displayImage.sprite = frontImages[currentIndex]; // Afficher l'avant de la carte
         }
         else
         {
-            Debug.Log("Vous Ítes dÈj‡ ‡ la premiËre carte.");
+            displayImage.sprite = backImages[currentIndex]; // Afficher l'arri√®re de la carte
         }
+
+        // D√©sactiver le bouton de s√©lection si le personnage est d√©j√† choisi
+        selectButton.interactable = !selectedCharacters[currentIndex];
     }
 
-    // Fonction pour valider la sÈlection et passer ‡ la scËne suivante
-    public void ValidateSelection()
+    void UpdatePlayerText()
     {
-        Debug.Log("Personnage choisi : " + currentCardIndex); // Affiche l'index de la carte choisie
-        // Exemple : SceneManager.LoadScene("SceneSuivante");
-    }
-
-    // Fonction pour revenir ‡ la scËne prÈcÈdente
-    public void GoBackToPreviousScene()
-    {
-        // Revenir ‡ la scËne prÈcÈdente
-        SceneManager.LoadScene("ScenePrÈcÈdente");
-    }
-
-    // Met ‡ jour l'affichage de la carte
-    void UpdateCard()
-    {
-        // VÈrifie que l'index est valide avant d'afficher la carte
-        if (currentCardIndex >= 0 && currentCardIndex < cardSprites.Length)
-        {
-            // Met ‡ jour l'image de la carte en fonction de l'index
-            cardImage.sprite = cardSprites[currentCardIndex];
-        }
-        else
-        {
-            Debug.LogError("Index de carte invalide : " + currentCardIndex);
-        }
+        // Mettre √† jour le texte pour indiquer le joueur actuel
+        playerText.text = "Joueur " + currentPlayer + " : Choisissez votre personnage";
     }
 }

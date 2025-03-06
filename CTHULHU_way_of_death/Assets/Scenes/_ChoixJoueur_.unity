@@ -167,7 +167,7 @@ MonoBehaviour:
   acceptButton: {fileID: 1938965765}
   backButton: {fileID: 590190688}
   audioSource: {fileID: 2034056824}
-  sceneToLoad: _scene_
+  sceneToLoad: _ChoixPersonnage_
   menuScene: _menu_
 --- !u!1 &385559876
 GameObject:
