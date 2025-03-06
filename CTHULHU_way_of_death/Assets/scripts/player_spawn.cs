@@ -3,31 +3,27 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour 
 {
     public GameObject player;
-    public int nb_player;  // Doit être un entier si on l'utilise dans une boucle
-    private GameObject[,] positions = new GameObject[8,8];
-    private GameObject[] player1 = new GameObject[1];
-    private GameObject[] player2 = new GameObject[1];
-    private GameObject[] player3 = new GameObject[1];
-    private GameObject[] player4 = new GameObject[1];
-    private GameObject[] player5 = new GameObject[1];
+    private int nombreJoueurs; // Initialisé dans Start()
+    
+    private GameObject[,] positions = new GameObject[8, 8];
 
     private string currentPlayer = "player1";
     private bool gameOver = false;
 
     void Start()
     {
-        GameObject[] playerliste = new GameObject[] 
-        {
-            Create("player1", 0, 0), 
-            Create("player2", 0, 0), 
-            Create("player3", 0, 0), 
-            Create("player4", 0, 0), 
-            Create("player5", 0, 0)
-        };
+        // Récupération du nombre de joueurs stocké dans PlayerPrefs
+        nombreJoueurs = PlayerPrefs.GetInt("NombreJoueurs", 1);
+        Debug.Log("Nombre de joueurs récupéré : " + nombreJoueurs);
 
-        for (int i = 0; i < nb_player; i++)
+        // Création des joueurs
+        GameObject[] playerliste = new GameObject[nombreJoueurs];
+
+        for (int i = 0; i < nombreJoueurs; i++)
         {
-            SetPosition(playerliste[i]);  // Correction : passer chaque élément
+            string playerName = "player" + (i + 1);
+            playerliste[i] = Create(playerName, i, 0);
+            SetPosition(playerliste[i]);
         }
     }
 
@@ -45,6 +41,6 @@ public class PlayerMovement : MonoBehaviour
     public void SetPosition(GameObject obj)
     {
         player_controller cm = obj.GetComponent<player_controller>();
-        positions[cm.GetXBoard(), cm.GetYBoard()] = obj;  // Correction du nom de la variable
+        positions[cm.GetXBoard(), cm.GetYBoard()] = obj;
     }
 }
