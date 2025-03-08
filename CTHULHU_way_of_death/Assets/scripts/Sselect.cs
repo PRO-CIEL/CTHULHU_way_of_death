@@ -66,7 +66,7 @@ public class ImageGallery : MonoBehaviour
     void ReturnToLastMenu()
     {
         // Retourner au menu précédent
-        SceneManager.LoadScene("MainMenu"); // Remplacez "MainMenu" par le nom de votre scène de menu
+        SceneManager.LoadScene("_ChoixJoueur_"); // Remplacez "MainMenu" par le nom de votre scène de menu
     }
 
     void SelectCharacter()
@@ -88,7 +88,7 @@ public class ImageGallery : MonoBehaviour
         // Si tous les joueurs ont choisi, charger la scène de jeu
         if (currentPlayer > PlayerPrefs.GetInt("NombreJoueurs", 1))
         {
-            SceneManager.LoadScene("_scene_"); // Remplacez "GameScene" par le nom de votre scène de jeu
+            SceneManager.LoadScene("_boss_selection_"); // Remplacez "GameScene" par le nom de votre scène de jeu
         }
         else
         {
